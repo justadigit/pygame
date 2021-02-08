@@ -1,5 +1,6 @@
 import pygame
 import os
+import sys
 pygame.font.init()
 pygame.mixer.init()
 
@@ -12,7 +13,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 
-BORDER = pygame.Rect(WIDTH//2 - 5, 0, 10, HEIGHT)
+BORDER = pygame.Rect(WIDTH//2 - 5, 0, 5, HEIGHT)
 
 BULLET_HIT_SOUND = pygame.mixer.Sound('Assets/Grenade+1.mp3')
 BULLET_FIRE_SOUND = pygame.mixer.Sound('Assets/Gun+Silencer.mp3')
@@ -48,9 +49,9 @@ def draw_window(red, yellow, red_bullets, yellow_bullets, red_health, yellow_hea
     pygame.draw.rect(WIN, BLACK, BORDER)
 
     red_health_text = HEALTH_FONT.render(
-        "Health: " + str(red_health), 1, WHITE)
+        "Health: " + str(red_health), 1, RED)
     yellow_health_text = HEALTH_FONT.render(
-        "Health: " + str(yellow_health), 1, WHITE)
+        "Health: " + str(yellow_health), 1, YELLOW)
     WIN.blit(red_health_text, (WIDTH - red_health_text.get_width() - 10, 10))
     WIN.blit(yellow_health_text, (10, 10))
 
@@ -69,7 +70,7 @@ def draw_window(red, yellow, red_bullets, yellow_bullets, red_health, yellow_hea
 def yellow_handle_movement(keys_pressed, yellow):
     if keys_pressed[pygame.K_a] and yellow.x - VEL > 0:  # LEFT
         yellow.x -= VEL
-    if keys_pressed[pygame.K_d] and yellow.x + VEL + yellow.width < BORDER.x:  # RIGHT
+    if keys_pressed[pygame.K_d] and yellow.x + VEL + yellow.width - 10 < BORDER.x:  # RIGHT
         yellow.x += VEL
     if keys_pressed[pygame.K_w] and yellow.y - VEL > 0:  # UP
         yellow.y -= VEL
@@ -107,7 +108,12 @@ def handle_bullets(yellow_bullets, red_bullets, yellow, red):
 
 
 def draw_winner(text):
-    draw_text = WINNER_FONT.render(text, 1, WHITE)
+    draw_text = ""
+    if "Yellow" in text:
+        draw_text = WINNER_FONT.render(text, 1, YELLOW)
+    if "Red" in text:
+        draw_text = WINNER_FONT.render(text, 1, RED)
+
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width() /
                          2, HEIGHT/2 - draw_text.get_height()/2))
     pygame.display.update()
@@ -132,6 +138,7 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
+                sys.exit()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LCTRL and len(yellow_bullets) < MAX_BULLETS:
